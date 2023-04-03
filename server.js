@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const http = require("http");
+const dotenv = require("dotenv").config();
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -30,12 +31,11 @@ app.get("/", function (req, res) {
 });
 
 const { Configuration, OpenAIApi } = require("openai");
-
-const configiration = new Configuration({
-  apiKey: "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",
+const configuration = new Configuration({
+  organization: process.env.ORG_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
-
-const openai = new OpenAIApi(configiration);
+const openai = new OpenAIApi(configuration);
 
 app.post("/teststart", async function (req, res) {
   let userResponse = req.body;
@@ -50,8 +50,10 @@ app.post("/teststart", async function (req, res) {
       return res;
     })
     .catch((e) => {
+      console.log("error 발생");
       return e;
     });
+
   const data = response.data.choices[0].message.content;
   userResponse.push({
     role: "system",
